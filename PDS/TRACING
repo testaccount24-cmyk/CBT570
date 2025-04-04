@@ -1,0 +1,34 @@
+REXX Tracing            Frank Clarke (rexxhead@yahoo.com)
+------------
+
+I have frequently observed REXX programmers starting a program with an
+explicit:
+
+    rc = Trace('O')
+
+(or something similar) which prevents tracing and manages to block even
+an "executil ts".
+
+This forces any subsequent user who needs to trace the program's
+operation to start by changing the program itself.  I recommend to
+everyone who will listen that it is almost trivial to enable tracing on
+command.  Naturally, the default state is "no special tracing", but
+enabling a user to select their own brand of tracing, when necessary, is
+a piece of cake.  Here's one method:
+
+   arg parmstr
+   pt = WordPos( "TRACE",parmstr )
+   if pt > 0 then do
+      parse var parmstr "TRACE" tv .
+      parse value  tv  'N'  with  tv  .
+      parmstr = DelWord( parmstr,pt,2 )
+      rc = Trace('O') ; rc = Trace(tv)
+      end
+
+If the user calls the routine as
+
+   ===> tso %zork 'jones.cntl(newjob)' trace ?r
+
+the code above will recognize the 'trace', parse off the '?r', and set
+'?r' as the required trace value.  Don't need to trace this routine?
+Don't ask for tracing.  Simple as that.
